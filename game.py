@@ -1,12 +1,15 @@
-# Create a Game class to represent the Tic Tac Toe python game
+# Packages
+from tictactoe import Cell
 
+
+# Create a Game class to represent the Tic Tac Toe python game
 class Game(object):
-	def __init__(self):
+	def __init__(self, x_player=None, o_player=None, frontend=None):
 		# Board and 2 players
 		self.board = [
-		[Cell.EMPTY, Cell.EMPTY, Cell.EMPTY],
-		[Cell.EMPTY, Cell.EMPTY, Cell.EMPTY],
-		[Cell.EMPTY, Cell.EMPTY, Cell.EMPTY],
+			[Cell.EMPTY, Cell.EMPTY, Cell.EMPTY],
+			[Cell.EMPTY, Cell.EMPTY, Cell.EMPTY],
+			[Cell.EMPTY, Cell.EMPTY, Cell.EMPTY],
 		]
 		
 		# is_x_turn boolean field keep track of alternating turns between players
@@ -21,43 +24,57 @@ class Game(object):
 					return False
 		return True
 
-
+	def _check_winning_set(self, iterable):
+		unique = set(iterable)
+		return Cell.EMPTY not in unique and len(unique) == 1
+	
 	def _check_winner(self):
 		# Check rows
 		for row in self.board:
-			if len(set(row)) == 1 and row[0] != Cell.EMPTY:
+			if self._check_winning_set(row):
 				return row[0]
 
 		# Check columns
-		for col in [*zip(self.board)]:
-			if len(set(col)) == 1 col[0] != Cell.EMPTY:
-				return col[0]
-
-		# Check diagonals
+		for column in [*zip(*self.board)]:
+			if self._check_winning_set(column):
+				return column[0]
+			
+		# Check major diagonal
 		size = len(self.board)
-		major_diag = set()
-		minor_diag = set()
-		for i in rage(size):
-			major_diag.add(self.board[i] [i])
-			minor_diag.add(self.board[i] [size-i-1])
+		major_diagonal = [self.board[i][i] for i in range(size)]
+		if self._check_winning_set(major_diagonal):
+			return major_diagonal[0]
 
-	
+		# Check minor diagonal
+		minor_diagonal = [self.board[i][size -i -1] for i in range(size)]
+		if self._check_winning_set(minor_diagonal):
+			return minor_diagonal[0]
 
-	def make_turn(self):
-		pass
+	def make_turn(self, turn: int, pice: Cell):
+		size = len(self.board)
+		i = turn // size
+		j = turn % size
+		self.board[i][j] = pice
+		self.is_x_tunr = not self.is_x_tunr
+		
 
 	def print_board(self):
 		pass
 
-	def is_game_over(slef):
+	def is_game_over(self):
 		winner = self._check_winner()
 		if winner is not None:
 			return winner 
 
 		return self._check_draw()
 
-	def print_winner(self):
-		pass
+    def print_winner(self, winner):
+        if winner == Cell.X:
+            self.frontend.print_winner(self.x_player.name)
+        elif winner == Cell.O:
+            self.frontend.print_winner(self.o_player.name)
+        else:
+            self.frontend.print_winner()
 
 	# Defines the flow for the game
 	def play(self):
