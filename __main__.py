@@ -1,13 +1,18 @@
-# Packages
+# Module
 from tictactoe.game import Game
-from tictactoe.player import RandomPlayer
+from tictactoe.player import ConsolePlayer
+from tictactoe.io import ConsoleFrontend
+from tictactoe.io import TableConsoleFrontend
+
 
 # Main function
 def main():
-	x_player = RandomPlayer()
-	o_player = RandomPlayer()
-	game = Game(x_player=x_player, o_player=o_player)
-	game.play()
+    frontend = ConsoleFrontend()
+    # frontend = TableConsoleFrontend()
+    player = ConsolePlayer('Army')
+    game = Game(x_player=player, frontend=frontend)
+    game.play()
 
-if __name__ == "__main__":
-	main()
+
+if __name__ == '__main__':
+    main()

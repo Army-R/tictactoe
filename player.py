@@ -1,32 +1,54 @@
-# Package
-from abc import ABC
-from abc import abstractmethod as absmet
-import string
+# Module
 import random
+import string
+from abc import ABC, abstractmethod
+from random import choice
+from dataclasses import dataclass
+
 from tictactoe import Cell
+from tictactoe.io import ConsoleFrontend
+
 
 # Abstract class, a boilerplate for other classes
-class Player(ABC):
-	def __init__(self, name=None, frontend=None):
-		self.name = name
-		self.frontend = frontend
+@dataclass
+class Turn:
+    row: int
+    column: int
 
-		@absmet
-		def get_turn(self, board):
-			pass
+
+class Player(ABC):
+    def __init__(self, name=None, frontend=None):
+        self.name = name
+        self.frontend = frontend
+
+    @abstractmethod
+    def get_turn(self, board):
+        pass
+
 
 class RandomPlayer(Player):
-	def __init__(self):
-		random_name = "".join([random.choice(string.ascii_letters) for _ in range(8)])
-		super().__init__(name=random_name)
+    def __init__(self):
+        random_name = "".join(
+            [random.choice(string.ascii_letters) for _ in range(8)]
+        )
+        super().__init__(name=random_name)
 
-	def get_turn(self, board):
-		available_cell = []
-		for i, row in enumerate(board):
-			for j, column in enumerate(board):
-				if board[i] [j] == Cell.EMPTY:
-					cell_index = i * len(board) + j
-					available_cell.append(cell_index)
+    def get_turn(self, board):
+        available_turns = []
+        for i, row in enumerate(board):
+            for j, column in enumerate(row):
+                if board[i][j] == Cell.EMPTY:
+                    t = Turn(i, j)
+                    available_turns.append(t)
+        return choice(available_turns)
 
-		return random.choice(available_cell)
 
+class ConsolePlayer(Player):
+    def __init__(self, name="Console Player"):
+        frontend = ConsoleFrontend()
+        super().__init__(name=name, frontend=frontend)
+
+    def get_turn(self, board):
+        while True:
+            index = self.frontend.get_input()
+            return int(index) - 1

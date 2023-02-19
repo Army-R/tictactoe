@@ -1,5 +1,8 @@
-# Packages
+# Module
+from typing import Optional
+
 from tictactoe import Cell
+from tictactoe.player import Turn, RandomPlayer
 
 
 # Create a Game class to represent the Tic Tac Toe python game
@@ -13,9 +16,10 @@ class Game(object):
 		]
 		
 		# is_x_turn boolean field keep track of alternating turns between players
-		self.is_x_tunr = True
+		self.is_x_turn = True
 		self.x_player = x_player
 		self.o_player = o_player
+		self.frontend = frontend
 
 	def _check_draw(self):
 		for row in self.board:
@@ -27,7 +31,7 @@ class Game(object):
 	def _check_winning_set(self, iterable):
 		unique = set(iterable)
 		return Cell.EMPTY not in unique and len(unique) == 1
-	
+
 	def _check_winner(self):
 		# Check rows
 		for row in self.board:
@@ -46,46 +50,42 @@ class Game(object):
 			return major_diagonal[0]
 
 		# Check minor diagonal
-		minor_diagonal = [self.board[i][size -i -1] for i in range(size)]
+		minor_diagonal = [self.board[i][size - i - 1] for i in range(size)]
 		if self._check_winning_set(minor_diagonal):
 			return minor_diagonal[0]
-
-	def make_turn(self, turn: int, pice: Cell):
-		size = len(self.board)
-		i = turn // size
-		j = turn % size
-		self.board[i][j] = pice
-		self.is_x_tunr = not self.is_x_tunr
-		
-
-	def print_board(self):
-		pass
 
 	def is_game_over(self):
 		winner = self._check_winner()
 		if winner is not None:
-			return winner 
+			return winner
 
 		return self._check_draw()
 
-    def print_winner(self, winner):
-        if winner == Cell.X:
-            self.frontend.print_winner(self.x_player.name)
-        elif winner == Cell.O:
-            self.frontend.print_winner(self.o_player.name)
-        else:
-            self.frontend.print_winner()
+	def make_turn(self, turn: Turn, piece: Cell):
+		self.board[turn.row][turn.column] = piece
+		self.is_x_turn = not self.is_x_turn
+
+	def print_board(self):
+		self.frontend.print_board(self.board)
+
+	def print_winner(self, winner):
+		if winner == Cell.X:
+			self.frontend.print_winner(self.x_player.name)
+		elif winner == Cell.O:
+			self.frontend.print_winner(self.o_player.name)
+		else:
+			self.frontend.print_winner()
 
 	# Defines the flow for the game
 	def play(self):
 		self.print_board()
 		while not (winner := self.is_game_over()):
-			if self.is_x_tunr:
+			if self.is_x_turn:
 				turn = self.x_player.get_turn(self.board)
-				pice = Cell.X 
+				piece = Cell.X
 			else:
 				turn = self.o_player.get_turn(self.board)
-				pice = Cell.O 
-			self.make_turn(turn, pice)
+				piece = Cell.O
+			self.make_turn(turn, piece)
 			self.print_board()
 		self.print_winner(winner)

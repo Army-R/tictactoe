@@ -1,5 +1,6 @@
-# Package
+# Module
 from enum import Enum
+
 
 # Define a single cell
 class Cell(Enum):
