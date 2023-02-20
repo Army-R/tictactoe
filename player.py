@@ -49,6 +49,9 @@ class ConsolePlayer(Player):
         super().__init__(name=name, frontend=frontend)
 
     def get_turn(self, board):
+        size = len(board)
         while True:
-            index = self.frontend.get_input()
-            return int(index) - 1
+            index = int(self.frontend.get_input()) - 1
+            row = index // size
+            column = index % size
+            return Turn(row, column)
